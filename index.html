@@ -1,1 +1,991 @@
-Hello World
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEON NEXUS | 科技感静态页面</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap");
+
+    :root {
+      --ink: #030607;
+      --panel: rgba(8, 18, 20, 0.72);
+      --panel-strong: rgba(13, 32, 34, 0.9);
+      --line: rgba(150, 255, 232, 0.2);
+      --text: #e9fffa;
+      --muted: #86a8a3;
+      --cyan: #27f7ff;
+      --mint: #6cffc9;
+      --amber: #ffbc42;
+      --red: #ff4d5d;
+      --shadow: rgba(39, 247, 255, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--ink);
+      color: var(--text);
+      font-family: "Noto Sans SC", sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(39, 247, 255, 0.16), transparent 28rem),
+        radial-gradient(circle at 84% 72%, rgba(255, 188, 66, 0.11), transparent 24rem),
+        linear-gradient(135deg, #030607 0%, #071011 48%, #020303 100%);
+    }
+
+    body::before,
+    body::after {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      content: "";
+    }
+
+    body::before {
+      background-image:
+        linear-gradient(rgba(108, 255, 201, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(108, 255, 201, 0.08) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.92), transparent 88%);
+      animation: grid-drift 18s linear infinite;
+    }
+
+    body::after {
+      z-index: 5;
+      opacity: 0.13;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.15) 0,
+          rgba(255, 255, 255, 0.15) 1px,
+          transparent 1px,
+          transparent 5px
+        );
+      mix-blend-mode: overlay;
+    }
+
+    #matrix {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      width: 100%;
+      height: 100%;
+      opacity: 0.68;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(18px);
+    }
+
+    .topbar .shell {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 76px;
+    }
+
+    .brand {
+      display: inline-grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      align-items: center;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      position: relative;
+      width: 42px;
+      aspect-ratio: 1;
+      border: 1px solid rgba(108, 255, 201, 0.7);
+      background:
+        linear-gradient(135deg, rgba(108, 255, 201, 0.24), transparent 42%),
+        rgba(4, 12, 13, 0.9);
+      box-shadow: 0 0 28px rgba(108, 255, 201, 0.2), inset 0 0 18px rgba(39, 247, 255, 0.12);
+      clip-path: polygon(18% 0, 100% 0, 100% 82%, 82% 100%, 0 100%, 0 18%);
+    }
+
+    .brand-mark::after {
+      position: absolute;
+      inset: 11px;
+      border: 2px solid var(--cyan);
+      content: "";
+      transform: rotate(45deg);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    .brand-title {
+      display: block;
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.95rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+    }
+
+    .brand-sub {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .nav {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .nav a {
+      min-width: 82px;
+      padding: 10px 14px;
+      border: 1px solid transparent;
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-align: center;
+      text-decoration: none;
+      transition: color 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .nav a:hover {
+      border-color: var(--line);
+      background: rgba(108, 255, 201, 0.08);
+      color: var(--mint);
+    }
+
+    .hero {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(340px, 0.8fr);
+      gap: 52px;
+      align-items: center;
+      min-height: calc(100vh - 76px);
+      padding: 70px 0 50px;
+    }
+
+    .hero-copy {
+      animation: rise 900ms ease both;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      margin: 0 0 22px;
+      color: var(--mint);
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      width: 42px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--mint));
+      content: "";
+      box-shadow: 0 0 18px var(--mint);
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-family: "Orbitron", "Noto Sans SC", sans-serif;
+      font-size: clamp(3.2rem, 8vw, 7.8rem);
+      font-weight: 900;
+      line-height: 0.88;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .glitch {
+      position: relative;
+      display: inline-block;
+      text-shadow: 0 0 34px rgba(39, 247, 255, 0.35);
+    }
+
+    .glitch::before,
+    .glitch::after {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      content: attr(data-text);
+      clip-path: inset(0 0 62% 0);
+    }
+
+    .glitch::before {
+      color: var(--cyan);
+      transform: translate(3px, -2px);
+      animation: glitch-a 3.3s steps(1) infinite;
+    }
+
+    .glitch::after {
+      color: var(--red);
+      transform: translate(-3px, 2px);
+      animation: glitch-b 2.7s steps(1) infinite;
+    }
+
+    .hero-text {
+      max-width: 610px;
+      margin: 28px 0 0;
+      color: #b8d5d0;
+      font-size: clamp(1.02rem, 2vw, 1.18rem);
+      line-height: 1.8;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 34px;
+    }
+
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 20px;
+      border: 1px solid rgba(108, 255, 201, 0.55);
+      background: rgba(108, 255, 201, 0.08);
+      color: var(--text);
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+      clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+    }
+
+    .btn.primary {
+      background: linear-gradient(90deg, rgba(39, 247, 255, 0.92), rgba(108, 255, 201, 0.88));
+      color: #001213;
+      box-shadow: 0 0 32px var(--shadow);
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 42px rgba(39, 247, 255, 0.2);
+    }
+
+    .orbital {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 560px;
+      animation: rise 900ms 180ms ease both;
+    }
+
+    .core {
+      position: relative;
+      width: min(460px, 88vw);
+      aspect-ratio: 1;
+      border: 1px solid rgba(108, 255, 201, 0.28);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at center, rgba(39, 247, 255, 0.24) 0 10%, transparent 11%),
+        conic-gradient(from 90deg, transparent 0 8%, rgba(39, 247, 255, 0.72) 9% 12%, transparent 13% 28%, rgba(255, 188, 66, 0.75) 29% 32%, transparent 33% 100%);
+      box-shadow:
+        inset 0 0 80px rgba(39, 247, 255, 0.1),
+        0 0 76px rgba(39, 247, 255, 0.13);
+      animation: spin 18s linear infinite;
+    }
+
+    .core::before,
+    .core::after {
+      position: absolute;
+      inset: 12%;
+      border: 1px dashed rgba(233, 255, 250, 0.32);
+      border-radius: inherit;
+      content: "";
+    }
+
+    .core::before {
+      animation: spin 11s linear infinite reverse;
+    }
+
+    .core::after {
+      inset: 27%;
+      border-style: solid;
+      border-color: rgba(108, 255, 201, 0.54);
+      box-shadow: inset 0 0 38px rgba(108, 255, 201, 0.14);
+    }
+
+    .core-label {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: min(210px, 48%);
+      aspect-ratio: 1;
+      border: 1px solid rgba(39, 247, 255, 0.45);
+      background: rgba(1, 12, 13, 0.82);
+      color: var(--text);
+      font-family: "Orbitron", sans-serif;
+      text-align: center;
+      box-shadow: 0 0 44px rgba(39, 247, 255, 0.2);
+      clip-path: polygon(16% 0, 84% 0, 100% 16%, 100% 84%, 84% 100%, 16% 100%, 0 84%, 0 16%);
+    }
+
+    .core-label strong {
+      display: block;
+      font-size: clamp(1.8rem, 5vw, 3.3rem);
+      line-height: 1;
+    }
+
+    .core-label span {
+      display: block;
+      margin-top: 9px;
+      color: var(--mint);
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+    }
+
+    .floating-card {
+      position: absolute;
+      width: 180px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(18px);
+      clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    }
+
+    .floating-card:nth-of-type(2) {
+      top: 72px;
+      right: 4px;
+      animation: float 4.8s ease-in-out infinite;
+    }
+
+    .floating-card:nth-of-type(3) {
+      bottom: 70px;
+      left: 0;
+      animation: float 5.8s ease-in-out infinite reverse;
+    }
+
+    .card-kicker {
+      color: var(--muted);
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.64rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .card-value {
+      margin-top: 8px;
+      color: var(--mint);
+      font-family: "Orbitron", sans-serif;
+      font-size: 1.28rem;
+      font-weight: 900;
+    }
+
+    .meter {
+      height: 5px;
+      margin-top: 12px;
+      overflow: hidden;
+      background: rgba(233, 255, 250, 0.1);
+    }
+
+    .meter span {
+      display: block;
+      width: 76%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan), var(--amber));
+      box-shadow: 0 0 16px var(--cyan);
+      animation: meter 2.8s ease-in-out infinite;
+    }
+
+    .section {
+      padding: 80px 0;
+      border-top: 1px solid rgba(150, 255, 232, 0.12);
+    }
+
+    .section-head {
+      display: flex;
+      gap: 24px;
+      align-items: end;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+
+    .section h2 {
+      margin: 0;
+      font-family: "Orbitron", "Noto Sans SC", sans-serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      max-width: 480px;
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .feature {
+      position: relative;
+      min-height: 260px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(145deg, rgba(108, 255, 201, 0.08), transparent 45%),
+        var(--panel);
+      overflow: hidden;
+      transition: transform 200ms ease, border-color 200ms ease;
+      clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
+    }
+
+    .feature::after {
+      position: absolute;
+      right: -30%;
+      bottom: -20%;
+      width: 220px;
+      aspect-ratio: 1;
+      border: 1px solid rgba(39, 247, 255, 0.16);
+      border-radius: 50%;
+      content: "";
+      box-shadow: inset 0 0 32px rgba(39, 247, 255, 0.08);
+    }
+
+    .feature:hover {
+      border-color: rgba(108, 255, 201, 0.6);
+      transform: translateY(-6px);
+    }
+
+    .feature-number {
+      color: var(--amber);
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+    }
+
+    .feature h3 {
+      margin: 48px 0 14px;
+      font-size: 1.2rem;
+    }
+
+    .feature p {
+      margin: 0;
+      color: #a9c6c0;
+      line-height: 1.72;
+    }
+
+    .console {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .terminal,
+    .stats {
+      border: 1px solid var(--line);
+      background: var(--panel-strong);
+      box-shadow: inset 0 0 38px rgba(39, 247, 255, 0.05);
+      clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+    }
+
+    .terminal {
+      min-height: 310px;
+      padding: 20px;
+      font-family: "Orbitron", monospace;
+    }
+
+    .terminal-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      min-height: 34px;
+      color: #c8fff3;
+      font-size: 0.84rem;
+      letter-spacing: 0.04em;
+    }
+
+    .terminal-row span:first-child {
+      color: var(--mint);
+    }
+
+    .terminal-row:nth-child(2n) {
+      color: #8eb9b3;
+    }
+
+    .stats {
+      display: grid;
+      gap: 1px;
+      overflow: hidden;
+      background: rgba(150, 255, 232, 0.12);
+    }
+
+    .stat {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 20px;
+      background: rgba(6, 18, 19, 0.94);
+    }
+
+    .stat b {
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .stat strong {
+      color: var(--text);
+      font-family: "Orbitron", sans-serif;
+      font-size: 1.38rem;
+    }
+
+    .ticker {
+      display: flex;
+      gap: 20px;
+      padding: 18px 0 34px;
+      overflow: hidden;
+      color: var(--mint);
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+    }
+
+    .ticker-track {
+      display: flex;
+      flex: 0 0 auto;
+      gap: 20px;
+      min-width: max-content;
+      animation: ticker 22s linear infinite;
+    }
+
+    .ticker span {
+      display: inline-flex;
+      gap: 20px;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    .ticker span::after {
+      color: var(--amber);
+      content: "/";
+    }
+
+    footer {
+      padding: 42px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    @keyframes grid-drift {
+      to {
+        background-position: 72px 72px;
+      }
+    }
+
+    @keyframes pulse {
+      50% {
+        opacity: 0.35;
+        transform: rotate(45deg) scale(0.74);
+      }
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(1turn);
+      }
+    }
+
+    @keyframes float {
+      50% {
+        transform: translateY(-16px);
+      }
+    }
+
+    @keyframes meter {
+      50% {
+        width: 96%;
+      }
+    }
+
+    @keyframes ticker {
+      to {
+        transform: translateX(calc(-100% - 20px));
+      }
+    }
+
+    @keyframes glitch-a {
+      0%, 84%, 100% {
+        clip-path: inset(0 0 62% 0);
+        transform: translate(3px, -2px);
+      }
+
+      85% {
+        clip-path: inset(18% 0 38% 0);
+        transform: translate(-4px, 1px);
+      }
+
+      89% {
+        clip-path: inset(58% 0 8% 0);
+        transform: translate(5px, -1px);
+      }
+    }
+
+    @keyframes glitch-b {
+      0%, 78%, 100% {
+        clip-path: inset(58% 0 8% 0);
+        transform: translate(-3px, 2px);
+      }
+
+      80% {
+        clip-path: inset(8% 0 70% 0);
+        transform: translate(4px, 2px);
+      }
+
+      84% {
+        clip-path: inset(28% 0 40% 0);
+        transform: translate(-5px, -1px);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .topbar {
+        min-height: 68px;
+      }
+
+      .nav {
+        display: none;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 26px;
+        min-height: auto;
+        padding-top: 54px;
+      }
+
+      .orbital {
+        min-height: 420px;
+      }
+
+      .floating-card {
+        width: 150px;
+      }
+
+      .section-head,
+      .console {
+        display: block;
+      }
+
+      .section-head p,
+      .stats {
+        margin-top: 18px;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .shell {
+        width: min(100% - 24px, 1180px);
+      }
+
+      h1 {
+        font-size: clamp(2.6rem, 18vw, 4.8rem);
+      }
+
+      .actions {
+        display: grid;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .orbital {
+        min-height: 360px;
+      }
+
+      .floating-card {
+        position: relative;
+        top: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        width: 100%;
+        margin-top: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix" aria-hidden="true"></canvas>
+
+  <header class="topbar">
+    <div class="shell">
+      <a class="brand" href="#top" aria-label="NEON NEXUS 首页">
+        <span class="brand-mark"></span>
+        <span>
+          <span class="brand-title">NEON NEXUS</span>
+          <span class="brand-sub">Quantum Interface</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="页面导航">
+        <a href="#systems">系统</a>
+        <a href="#console">控制台</a>
+        <a href="#signal">信号</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="shell hero" aria-label="科技主题首屏">
+      <div class="hero-copy">
+        <p class="eyebrow">Live Data Architecture</p>
+        <h1>
+          <span class="glitch" data-text="Neon">Neon</span><br />
+          Nexus
+        </h1>
+        <p class="hero-text">
+          一块高能量的未来界面：实时粒子流、量子核心、霓虹扫描线和数据控制台交叠在一个静态 HTML 中，打开即进入下一代数字中枢。
+        </p>
+        <div class="actions">
+          <a class="btn primary" href="#console">启动协议</a>
+          <a class="btn" href="#systems">查看系统</a>
+        </div>
+      </div>
+
+      <div class="orbital" aria-label="动态核心视觉">
+        <div class="core"></div>
+        <div class="core-label">
+          <div>
+            <strong>98.7</strong>
+            <span>SYNC RATE</span>
+          </div>
+        </div>
+        <div class="floating-card">
+          <div class="card-kicker">Node Velocity</div>
+          <div class="card-value">42.8 THz</div>
+          <div class="meter"><span></span></div>
+        </div>
+        <div class="floating-card">
+          <div class="card-kicker">Signal Integrity</div>
+          <div class="card-value">ONLINE</div>
+          <div class="meter"><span></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ticker" id="signal" aria-label="信号滚动条">
+      <div class="ticker-track">
+        <span>Adaptive Mesh</span>
+        <span>Low Latency</span>
+        <span>Cybernetic Signal</span>
+        <span>Zero Drift</span>
+        <span>Quantum Sync</span>
+      </div>
+      <div class="ticker-track" aria-hidden="true">
+        <span>Adaptive Mesh</span>
+        <span>Low Latency</span>
+        <span>Cybernetic Signal</span>
+        <span>Zero Drift</span>
+        <span>Quantum Sync</span>
+      </div>
+    </section>
+
+    <section class="shell section" id="systems">
+      <div class="section-head">
+        <h2>核心系统</h2>
+        <p>用清晰的模块感承载未来风格，让视觉不仅酷，也有稳定的信息层级和真实产品界面的质感。</p>
+      </div>
+
+      <div class="feature-grid">
+        <article class="feature">
+          <div class="feature-number">01 / RADAR</div>
+          <h3>全域感知矩阵</h3>
+          <p>多层网格、扫描线和粒子背景构成空间深度，页面在静态部署中仍然具备动态生命力。</p>
+        </article>
+        <article class="feature">
+          <div class="feature-number">02 / CORE</div>
+          <h3>量子同步核心</h3>
+          <p>旋转环轨、数据卡片和中心状态组成视觉焦点，强调科技产品常见的状态监控语言。</p>
+        </article>
+        <article class="feature">
+          <div class="feature-number">03 / SIGNAL</div>
+          <h3>霓虹响应界面</h3>
+          <p>按钮、面板和终端行都有光效反馈，整体不依赖框架，部署简单，加载轻盈。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell section" id="console">
+      <div class="section-head">
+        <h2>控制台</h2>
+        <p>原生 JavaScript 驱动背景粒子和动态状态数值，保持纯静态文件的同时制造系统正在运行的感觉。</p>
+      </div>
+
+      <div class="console">
+        <div class="terminal" aria-label="协议终端">
+          <div class="terminal-row"><span>&gt;</span><span>boot nexus.kernel --mode=aurora</span></div>
+          <div class="terminal-row"><span>&gt;</span><span>mapping neural routes .......... done</span></div>
+          <div class="terminal-row"><span>&gt;</span><span>calibrating photonic bridge .... 98.7%</span></div>
+          <div class="terminal-row"><span>&gt;</span><span>security lattice ............... active</span></div>
+          <div class="terminal-row"><span>&gt;</span><span>rendering interface ............ stable</span></div>
+          <div class="terminal-row"><span>&gt;</span><span>waiting for next signal <span id="cursor">_</span></span></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><b>处理吞吐</b><strong id="throughput">8.42 PB/s</strong></div>
+          <div class="stat"><b>响应延迟</b><strong id="latency">2.8 ms</strong></div>
+          <div class="stat"><b>核心温度</b><strong id="thermal">31 C</strong></div>
+          <div class="stat"><b>链路状态</b><strong>LOCKED</strong></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    NEON NEXUS / Static HTML Interface / Built for GitHub Pages
+  </footer>
+
+  <script>
+    const canvas = document.querySelector("#matrix");
+    const ctx = canvas.getContext("2d");
+    const pointer = { x: 0.5, y: 0.5 };
+    let particles = [];
+    let width = 0;
+    let height = 0;
+
+    function resize() {
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.floor(width * ratio);
+      canvas.height = Math.floor(height * ratio);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      particles = Array.from({ length: Math.min(110, Math.floor(width / 12)) }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.38,
+        vy: (Math.random() - 0.5) * 0.38,
+        size: Math.random() * 1.8 + 0.8
+      }));
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = "rgba(3, 6, 7, 0.16)";
+      ctx.fillRect(0, 0, width, height);
+
+      for (const particle of particles) {
+        const pullX = (pointer.x * width - particle.x) * 0.000018;
+        const pullY = (pointer.y * height - particle.y) * 0.000018;
+        particle.vx += pullX;
+        particle.vy += pullY;
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+
+        if (particle.x < -20) particle.x = width + 20;
+        if (particle.x > width + 20) particle.x = -20;
+        if (particle.y < -20) particle.y = height + 20;
+        if (particle.y > height + 20) particle.y = -20;
+
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(108, 255, 201, 0.75)";
+        ctx.shadowColor = "rgba(39, 247, 255, 0.8)";
+        ctx.shadowBlur = 12;
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.shadowBlur = 0;
+      for (let i = 0; i < particles.length; i += 1) {
+        for (let j = i + 1; j < particles.length; j += 1) {
+          const a = particles[i];
+          const b = particles[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const distance = Math.hypot(dx, dy);
+          if (distance < 130) {
+            ctx.strokeStyle = `rgba(39, 247, 255, ${0.18 - distance / 900})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    function updateStats() {
+      const throughput = document.querySelector("#throughput");
+      const latency = document.querySelector("#latency");
+      const thermal = document.querySelector("#thermal");
+      const cursor = document.querySelector("#cursor");
+      throughput.textContent = `${(8 + Math.random() * 1.8).toFixed(2)} PB/s`;
+      latency.textContent = `${(2.1 + Math.random() * 1.4).toFixed(1)} ms`;
+      thermal.textContent = `${Math.floor(29 + Math.random() * 5)} C`;
+      cursor.style.opacity = cursor.style.opacity === "0" ? "1" : "0";
+    }
+
+    window.addEventListener("resize", resize);
+    window.addEventListener("pointermove", (event) => {
+      pointer.x = event.clientX / window.innerWidth;
+      pointer.y = event.clientY / window.innerHeight;
+    });
+
+    resize();
+    draw();
+    setInterval(updateStats, 700);
+  </script>
+</body>
+</html>
